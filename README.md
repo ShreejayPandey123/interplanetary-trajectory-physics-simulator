@@ -57,7 +57,7 @@ The simulator demonstrates how spacecraft can transfer between planetary orbits,
 
 The simulator uses the classical Hohmann transfer equations to determine the transfer orbit between two circular planetary orbits.
 
-For a transfer between radii \(r_1\) and \(r_2\):
+For a transfer between radii \(r_1\) and \(r_2\), the semi-major axis of the transfer ellipse is:
 
 $$
 a_t = \frac{r_1+r_2}{2}
@@ -66,7 +66,7 @@ $$
 The transfer velocity is calculated using the vis-viva equation:
 
 $$
-v = \sqrt{\mu\left(\frac{2}{r}-\frac{1}{a_t}\right)}
+v = \sqrt{\mu\left(\frac{2}{r}-\frac{1}{a}\right)}
 $$
 
 The simulator also calculates the corresponding departure and arrival Δv values and transfer time.
@@ -78,22 +78,22 @@ The Jupiter gravity-assist model uses a hyperbolic flyby approximation.
 The hyperbolic eccentricity is:
 
 $$
-e = 1+\frac{r_pv_\infty^2}{\mu_p}
+e_h = 1 + \frac{r_p v_\infty^2}{\mu_p}
 $$
 
-and the turning angle is:
+The turning angle is:
 
 $$
-\delta = 2\sin^{-1}\left(\frac{1}{e}\right)
+\delta = 2\sin^{-1}\left(\frac{1}{e_h}\right)
 $$
 
-The outgoing spacecraft velocity is then obtained through vector addition of the planet's heliocentric velocity and the deflected spacecraft-relative velocity.
+The outgoing spacecraft velocity is obtained through vector addition of the planet's heliocentric velocity and the deflected spacecraft-relative velocity.
 
 For the configured Jupiter example, the simulation produces approximately:
 
 **+9.9 km/s heliocentric velocity change**
 
-with an outgoing velocity of approximately:
+with an outgoing heliocentric velocity of approximately:
 
 **17.4 km/s**
 
@@ -133,21 +133,16 @@ Mission telemetry displays parameters such as spacecraft velocity, distance, and
 ```text
 interplanetary-trajectory-physics-simulator/
 │
-├── physics/
-│   ├── interplanetary_physics_engine.py
-│   └── cr3bp_physics_engine.py
+├── interplanetary_physics_engine.py
+├── cr3bp_physics_engine.py
+├── cr3bp_telemetry_export.csv
 │
-├── telemetry/
-│   └── cr3bp_telemetry_export.csv
+├── index.html
+├── app.js
+├── styles.css
 │
-├── web/
-│   ├── index.html
-│   ├── app.js
-│   └── styles.css
-│
-├── documentation/
-│   ├── PHYSICAL_THEORY.md
-│   └── PRESENTATION_HANDOUT.md
+├── PHYSICAL_THEORY.md
+├── PRESENTATION_HANDOUT.md
 │
 └── README.md
 ```
@@ -172,36 +167,42 @@ Install the required Python packages:
 pip install numpy matplotlib
 ```
 
-Then run:
+Run the interplanetary physics engine:
 
 ```bash
-python physics/interplanetary_physics_engine.py
+python interplanetary_physics_engine.py
 ```
 
 For the CR3BP simulation:
 
 ```bash
-python physics/cr3bp_physics_engine.py
+python cr3bp_physics_engine.py
 ```
 
 ## 🌐 Running the 3D Visualization
 
-Open:
+Open the project using a local web server.
 
-```text
-web/index.html
+For example:
+
+```bash
+python -m http.server
 ```
 
-in a modern web browser.
+Then open the local server address in a modern web browser and access:
 
-For best results, run the web application through a local server rather than opening the HTML file directly.
+```text
+index.html
+```
+
+Running through a local server is recommended rather than opening the HTML file directly.
 
 ## 📚 Documentation
 
-Additional technical documentation is available in:
+Additional technical documentation is available here:
 
-* [`PHYSICAL_THEORY.md`](documentation/PHYSICAL_THEORY.md) — mathematical and physical foundations
-* [`PRESENTATION_HANDOUT.md`](documentation/PRESENTATION_HANDOUT.md) — project presentation material
+* [📐 Physical Theory](PHYSICAL_THEORY.md) — mathematical and physical foundations
+* [🎓 Presentation Handout](PRESENTATION_HANDOUT.md) — project presentation material
 
 ## 🎯 Project Goals
 
@@ -211,7 +212,9 @@ It demonstrates how mathematical models such as Hohmann transfers, hyperbolic fl
 
 ## ⚠️ Simulation Scope
 
-The interplanetary mission examples use idealized orbital-mechanics and patched-conic assumptions. The gravity-assist demonstration uses a specified flyby geometry rather than solving a complete launch-window and planetary-phase optimization problem.
+The interplanetary mission examples use idealized orbital-mechanics and patched-conic assumptions.
+
+The gravity-assist demonstration uses a specified flyby geometry rather than solving a complete launch-window and planetary-phase optimization problem.
 
 The visualization is intended to communicate the physics and mission sequence interactively, while the Python engines provide the underlying numerical calculations.
 
