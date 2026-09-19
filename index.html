@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTERPLANETARY: Deep Space Slingshot Flight</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Three.js and OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="cinematic-body">
+    <!-- Full-Screen 3D Canvas Viewport -->
+    <div id="webgl-canvas-container"></div>
+
+    <!-- Cinematic Overlay HUD -->
+    <div class="cinematic-overlay">
+        <!-- Top Movie Bar -->
+        <header class="movie-header">
+            <div class="movie-title">
+                <i class="fa-solid fa-shuttle-space movie-icon"></i>
+                <div>
+                    <h1>INTERPLANETARY</h1>
+                    <p>DEEP SPACE SLINGSHOT FLYBY</p>
+                </div>
+            </div>
+
+            <div class="movie-badges">
+                <div class="badge-live"><span class="red-pulse"></span> CINEMATIC SIMULATION</div>
+                <div class="badge-hud" id="targetHud">Target: <strong>Jupiter Flyby</strong></div>
+            </div>
+
+            <div class="movie-actions">
+                <button class="btn-movie active-state" id="btnToggleCam" title="Toggle automatic camera cinematic camera rotation">
+                    <i class="fa-solid fa-video"></i>
+                    <span>Camera: Auto</span>
+                    <span class="btn-status-tag" id="camStatusTag">ON</span>
+                </button>
+                <button class="btn-movie" id="btnTogglePlay" title="Pause or play orbital simulation">
+                    <i class="fa-solid fa-pause" id="playBtnIcon"></i>
+                    <span id="playBtnText">Sim: Running</span>
+                </button>
+                <button class="btn-movie" id="btnToggleSpeed" title="Change simulation speed rate">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span id="speedBtnText">Speed: 1x</span>
+                </button>
+                <button class="btn-movie btn-gold" id="btnHandoutModal" title="Open 30-second presentation summary modal">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>30-Sec Summary</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Movie Subtitles & Story Banner -->
+        <div class="subtitle-banner">
+            <div class="subtitle-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+            <div class="subtitle-text">
+                <span class="sub-label" id="subLabel">SCENE 1: EARTH DEPARTURE IGNITION</span>
+                <p id="subText">Spacecraft ignites ion thrusters at Earth (1.0 AU), accelerating into the deep space solar transfer arc...</p>
+            </div>
+        </div>
+
+        <!-- Sleek Telemetry HUD Widgets -->
+        <div class="telemetry-hud left-hud">
+            <div class="hud-stat">
+                <span class="stat-label">Heliocentric Speed</span>
+                <span class="stat-value" id="hudSpeed">32.7 km/s</span>
+            </div>
+            <div class="hud-stat">
+                <span class="stat-label">Sun Distance</span>
+                <span class="stat-value" id="hudDist">1.00 AU</span>
+            </div>
+            <div class="hud-stat">
+                <span class="stat-label">Flight Time</span>
+                <span class="stat-value" id="hudTime">0.0 months</span>
+            </div>
+        </div>
+
+        <!-- Interactive Scene Selector Buttons -->
+        <div class="scene-selector-wrapper">
+            <div class="scene-selector-header">
+                <span class="scene-selector-title"><i class="fa-solid fa-film"></i> SELECT FLIGHT PHASE</span>
+                <span class="scene-selector-hint"><i class="fa-solid fa-hand-pointer"></i> Click to Switch Scene</span>
+            </div>
+            <div class="scene-bar">
+                <button class="scene-btn active" data-scene="1" title="Phase 1: Earth Departure Burn">
+                    <span class="scene-num">01</span>
+                    <i class="fa-solid fa-fire-flame-curved scene-icon icon-scene-1"></i>
+                    <span class="scene-text">1. Earth Ignition</span>
+                </button>
+                <button class="scene-btn" data-scene="2" title="Phase 2: Deep Space Solar Transfer Arc">
+                    <span class="scene-num">02</span>
+                    <i class="fa-solid fa-compass scene-icon icon-scene-2"></i>
+                    <span class="scene-text">2. Deep Space Transit</span>
+                </button>
+                <button class="scene-btn" data-scene="3" title="Phase 3: Jupiter Gravity Assist Slingshot">
+                    <span class="scene-num">03</span>
+                    <i class="fa-solid fa-bolt-lightning scene-icon icon-scene-3"></i>
+                    <span class="scene-text">3. Jupiter Slingshot</span>
+                </button>
+                <button class="scene-btn" data-scene="4" title="Phase 4: Solar System Escape Trajectory">
+                    <span class="scene-num">04</span>
+                    <i class="fa-solid fa-circle-nodes scene-icon icon-scene-4"></i>
+                    <span class="scene-text">4. System Overview</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Handout Modal -->
+    <div class="modal-overlay" id="handoutModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-file-lines"></i> 30-Second Presentation Summary</h2>
+                <button class="modal-close" id="btnCloseModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <section class="math-block">
+                    <h3>📌 What does this project simulate?</h3>
+                    <p>It models how NASA spacecraft travel across interplanetary space using <strong>Hohmann Transfer Orbits</strong> and <strong>Slingshot Gravity Assists</strong> to reach distant planets with minimum rocket fuel.</p>
+                </section>
+
+                <section class="math-block">
+                    <h3>1. Hohmann Transfer Orbit</h3>
+                    <p>Instead of flying straight, the rocket fires its engine once at Earth to enter an elliptical arc that naturally intersects the target planet.</p>
+                </section>
+
+                <section class="math-block">
+                    <h3>2. The Vis-Viva Equation</h3>
+                    <p><strong>v² = GM(2/r - 1/a)</strong>: Calculates exact spacecraft speed. As the probe moves further from the Sun, solar gravity continuously slows it down.</p>
+                </section>
+
+                <section class="math-block">
+                    <h3>3. Vector Gravity Assist (Free Speed Boost!)</h3>
+                    <p>When passing near Jupiter, Jupiter's gravity bends the flight path. The probe <strong>steals a tiny fraction of Jupiter's orbital momentum</strong>, gaining a vector-calculated <strong>+9.9 km/s boost of heliocentric speed for FREE</strong>!</p>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>
